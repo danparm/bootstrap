@@ -1,38 +1,23 @@
 /*!
-  * Bootstrap button.js v5.0.0-alpha1 (https://getbootstrap.com/)
+  * Bootstrap button.js v5.0.0-beta1 (https://getbootstrap.com/)
   * Copyright 2011-2020 The Bootstrap Authors (https://github.com/twbs/bootstrap/graphs/contributors)
-  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
+  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
   */
 (function (global, factory) {
-  typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('./dom/data.js'), require('./dom/event-handler.js'), require('./dom/selector-engine.js')) :
-  typeof define === 'function' && define.amd ? define(['./dom/data.js', './dom/event-handler.js', './dom/selector-engine.js'], factory) :
-  (global = global || self, global.Button = factory(global.Data, global.EventHandler, global.SelectorEngine));
-}(this, (function (Data, EventHandler, SelectorEngine) { 'use strict';
+  typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('./dom/data.js'), require('./dom/event-handler.js')) :
+  typeof define === 'function' && define.amd ? define(['./dom/data', './dom/event-handler'], factory) :
+  (global = typeof globalThis !== 'undefined' ? globalThis : global || self, global.Button = factory(global.Data, global.EventHandler));
+}(this, (function (Data, EventHandler) { 'use strict';
 
-  Data = Data && Object.prototype.hasOwnProperty.call(Data, 'default') ? Data['default'] : Data;
-  EventHandler = EventHandler && Object.prototype.hasOwnProperty.call(EventHandler, 'default') ? EventHandler['default'] : EventHandler;
-  SelectorEngine = SelectorEngine && Object.prototype.hasOwnProperty.call(SelectorEngine, 'default') ? SelectorEngine['default'] : SelectorEngine;
+  function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
 
-  function _defineProperties(target, props) {
-    for (var i = 0; i < props.length; i++) {
-      var descriptor = props[i];
-      descriptor.enumerable = descriptor.enumerable || false;
-      descriptor.configurable = true;
-      if ("value" in descriptor) descriptor.writable = true;
-      Object.defineProperty(target, descriptor.key, descriptor);
-    }
-  }
-
-  function _createClass(Constructor, protoProps, staticProps) {
-    if (protoProps) _defineProperties(Constructor.prototype, protoProps);
-    if (staticProps) _defineProperties(Constructor, staticProps);
-    return Constructor;
-  }
+  var Data__default = /*#__PURE__*/_interopDefaultLegacy(Data);
+  var EventHandler__default = /*#__PURE__*/_interopDefaultLegacy(EventHandler);
 
   /**
    * --------------------------------------------------------------------------
-   * Bootstrap (v5.0.0-alpha1): util/index.js
-   * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
+   * Bootstrap (v5.0.0-beta1): util/index.js
+   * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
    * --------------------------------------------------------------------------
    */
 
@@ -40,13 +25,72 @@
     var _window = window,
         jQuery = _window.jQuery;
 
-    if (jQuery && !document.body.hasAttribute('data-no-jquery')) {
+    if (jQuery && !document.body.hasAttribute('data-bs-no-jquery')) {
       return jQuery;
     }
 
     return null;
   };
 
+  var onDOMContentLoaded = function onDOMContentLoaded(callback) {
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', callback);
+    } else {
+      callback();
+    }
+  };
+
+  var isRTL = document.documentElement.dir === 'rtl';
+
+  function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+  function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+  /**
+   * ------------------------------------------------------------------------
+   * Constants
+   * ------------------------------------------------------------------------
+   */
+
+  var VERSION = '5.0.0-beta1';
+
+  var BaseComponent = /*#__PURE__*/function () {
+    function BaseComponent(element) {
+      if (!element) {
+        return;
+      }
+
+      this._element = element;
+      Data__default['default'].setData(element, this.constructor.DATA_KEY, this);
+    }
+
+    var _proto = BaseComponent.prototype;
+
+    _proto.dispose = function dispose() {
+      Data__default['default'].removeData(this._element, this.constructor.DATA_KEY);
+      this._element = null;
+    }
+    /** Static */
+    ;
+
+    BaseComponent.getInstance = function getInstance(element) {
+      return Data__default['default'].getData(element, this.DATA_KEY);
+    };
+
+    _createClass(BaseComponent, null, [{
+      key: "VERSION",
+      get: function get() {
+        return VERSION;
+      }
+    }]);
+
+    return BaseComponent;
+  }();
+
+  function _defineProperties$1(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+  function _createClass$1(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties$1(Constructor.prototype, protoProps); if (staticProps) _defineProperties$1(Constructor, staticProps); return Constructor; }
+
+  function _inheritsLoose(subClass, superClass) { subClass.prototype = Object.create(superClass.prototype); subClass.prototype.constructor = subClass; subClass.__proto__ = superClass; }
   /**
    * ------------------------------------------------------------------------
    * Constants
@@ -54,89 +98,37 @@
    */
 
   var NAME = 'button';
-  var VERSION = '5.0.0-alpha1';
   var DATA_KEY = 'bs.button';
   var EVENT_KEY = "." + DATA_KEY;
   var DATA_API_KEY = '.data-api';
   var CLASS_NAME_ACTIVE = 'active';
-  var CLASS_NAME_DISABLED = 'disabled';
-  var CLASS_NAME_FOCUS = 'focus';
-  var SELECTOR_DATA_TOGGLE_CARROT = '[data-toggle^="button"]';
-  var SELECTOR_DATA_TOGGLE = '[data-toggle="buttons"]';
-  var SELECTOR_INPUT = 'input:not([type="hidden"])';
-  var SELECTOR_ACTIVE = '.active';
-  var SELECTOR_BUTTON = '.btn';
+  var SELECTOR_DATA_TOGGLE = '[data-bs-toggle="button"]';
   var EVENT_CLICK_DATA_API = "click" + EVENT_KEY + DATA_API_KEY;
-  var EVENT_FOCUS_DATA_API = "focus" + EVENT_KEY + DATA_API_KEY;
-  var EVENT_BLUR_DATA_API = "blur" + EVENT_KEY + DATA_API_KEY;
   /**
    * ------------------------------------------------------------------------
    * Class Definition
    * ------------------------------------------------------------------------
    */
 
-  var Button = /*#__PURE__*/function () {
-    function Button(element) {
-      this._element = element;
-      Data.setData(element, DATA_KEY, this);
-    } // Getters
+  var Button = /*#__PURE__*/function (_BaseComponent) {
+    _inheritsLoose(Button, _BaseComponent);
 
+    function Button() {
+      return _BaseComponent.apply(this, arguments) || this;
+    }
 
     var _proto = Button.prototype;
 
     // Public
     _proto.toggle = function toggle() {
-      var triggerChangeEvent = true;
-      var addAriaPressed = true;
-
-      var rootElement = this._element.closest(SELECTOR_DATA_TOGGLE);
-
-      if (rootElement) {
-        var input = SelectorEngine.findOne(SELECTOR_INPUT, this._element);
-
-        if (input && input.type === 'radio') {
-          if (input.checked && this._element.classList.contains(CLASS_NAME_ACTIVE)) {
-            triggerChangeEvent = false;
-          } else {
-            var activeElement = SelectorEngine.findOne(SELECTOR_ACTIVE, rootElement);
-
-            if (activeElement) {
-              activeElement.classList.remove(CLASS_NAME_ACTIVE);
-            }
-          }
-
-          if (triggerChangeEvent) {
-            if (input.hasAttribute('disabled') || rootElement.hasAttribute('disabled') || input.classList.contains(CLASS_NAME_DISABLED) || rootElement.classList.contains(CLASS_NAME_DISABLED)) {
-              return;
-            }
-
-            input.checked = !this._element.classList.contains(CLASS_NAME_ACTIVE);
-            EventHandler.trigger(input, 'change');
-          }
-
-          input.focus();
-          addAriaPressed = false;
-        }
-      }
-
-      if (addAriaPressed) {
-        this._element.setAttribute('aria-pressed', !this._element.classList.contains(CLASS_NAME_ACTIVE));
-      }
-
-      if (triggerChangeEvent) {
-        this._element.classList.toggle(CLASS_NAME_ACTIVE);
-      }
-    };
-
-    _proto.dispose = function dispose() {
-      Data.removeData(this._element, DATA_KEY);
-      this._element = null;
+      // Toggle class and sync the `aria-pressed` attribute with the return value of the `.toggle()` method
+      this._element.setAttribute('aria-pressed', this._element.classList.toggle(CLASS_NAME_ACTIVE));
     } // Static
     ;
 
     Button.jQueryInterface = function jQueryInterface(config) {
       return this.each(function () {
-        var data = Data.getData(this, DATA_KEY);
+        var data = Data__default['default'].getData(this, DATA_KEY);
 
         if (!data) {
           data = new Button(this);
@@ -148,19 +140,16 @@
       });
     };
 
-    Button.getInstance = function getInstance(element) {
-      return Data.getData(element, DATA_KEY);
-    };
-
-    _createClass(Button, null, [{
-      key: "VERSION",
+    _createClass$1(Button, null, [{
+      key: "DATA_KEY",
+      // Getters
       get: function get() {
-        return VERSION;
+        return DATA_KEY;
       }
     }]);
 
     return Button;
-  }();
+  }(BaseComponent);
   /**
    * ------------------------------------------------------------------------
    * Data Api implementation
@@ -168,10 +157,10 @@
    */
 
 
-  EventHandler.on(document, EVENT_CLICK_DATA_API, SELECTOR_DATA_TOGGLE_CARROT, function (event) {
+  EventHandler__default['default'].on(document, EVENT_CLICK_DATA_API, SELECTOR_DATA_TOGGLE, function (event) {
     event.preventDefault();
-    var button = event.target.closest(SELECTOR_BUTTON);
-    var data = Data.getData(button, DATA_KEY);
+    var button = event.target.closest(SELECTOR_DATA_TOGGLE);
+    var data = Data__default['default'].getData(button, DATA_KEY);
 
     if (!data) {
       data = new Button(button);
@@ -179,40 +168,28 @@
 
     data.toggle();
   });
-  EventHandler.on(document, EVENT_FOCUS_DATA_API, SELECTOR_DATA_TOGGLE_CARROT, function (event) {
-    var button = event.target.closest(SELECTOR_BUTTON);
-
-    if (button) {
-      button.classList.add(CLASS_NAME_FOCUS);
-    }
-  });
-  EventHandler.on(document, EVENT_BLUR_DATA_API, SELECTOR_DATA_TOGGLE_CARROT, function (event) {
-    var button = event.target.closest(SELECTOR_BUTTON);
-
-    if (button) {
-      button.classList.remove(CLASS_NAME_FOCUS);
-    }
-  });
-  var $ = getjQuery();
   /**
    * ------------------------------------------------------------------------
    * jQuery
    * ------------------------------------------------------------------------
-   * add .button to jQuery only if jQuery is present
+   * add .Button to jQuery only if jQuery is present
    */
 
-  /* istanbul ignore if */
+  onDOMContentLoaded(function () {
+    var $ = getjQuery();
+    /* istanbul ignore if */
 
-  if ($) {
-    var JQUERY_NO_CONFLICT = $.fn[NAME];
-    $.fn[NAME] = Button.jQueryInterface;
-    $.fn[NAME].Constructor = Button;
+    if ($) {
+      var JQUERY_NO_CONFLICT = $.fn[NAME];
+      $.fn[NAME] = Button.jQueryInterface;
+      $.fn[NAME].Constructor = Button;
 
-    $.fn[NAME].noConflict = function () {
-      $.fn[NAME] = JQUERY_NO_CONFLICT;
-      return Button.jQueryInterface;
-    };
-  }
+      $.fn[NAME].noConflict = function () {
+        $.fn[NAME] = JQUERY_NO_CONFLICT;
+        return Button.jQueryInterface;
+      };
+    }
+  });
 
   return Button;
 

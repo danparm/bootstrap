@@ -24,12 +24,14 @@
     text-decoration: if($link-hover-decoration == underline, none, null);
   }
 
-  &:focus,
-  &.focus {
+  .btn-check:focus + &,
+  &:focus {
     outline: 0;
     box-shadow: $btn-focus-box-shadow;
   }
 
+  .btn-check:checked + &,
+  .btn-check:active + &,
   &:active,
   &.active {
     @include box-shadow($btn-active-box-shadow);
@@ -41,7 +43,7 @@
 
   &:disabled,
   &.disabled,
-  fieldset:disabled & { // stylelint-disable-line selector-no-qualifying-type
+  fieldset:disabled & {
     pointer-events: none;
     opacity: $btn-disabled-opacity;
     @include box-shadow(none);
@@ -81,8 +83,7 @@
     text-decoration: $link-hover-decoration;
   }
 
-  &:focus,
-  &.focus {
+  &:focus {
     text-decoration: $link-hover-decoration;
   }
 
@@ -105,19 +106,4 @@
 
 .btn-sm {
   @include button-size($btn-padding-y-sm, $btn-padding-x-sm, $btn-font-size-sm, $btn-border-radius-sm);
-}
-
-
-//
-// Block button
-//
-
-.btn-block {
-  display: block;
-  width: 100%;
-
-  // Vertically space out multiple block buttons
-  + .btn-block {
-    margin-top: $btn-block-spacing-y;
-  }
 }

@@ -31,7 +31,7 @@ The `<html>` and `<body>` elements are updated to provide better page-wide defau
 
 Bootstrap utilizes a "native font stack" or "system font stack" for optimum text rendering on every device and OS. These system fonts have been designed specifically with today's devices in mind, with improved rendering on screens, variable font support, and more. Read more about [native font stacks in this *Smashing Magazine* article](https://www.smashingmagazine.com/2015/11/using-system-ui-fonts-practical-guide/).
 
-{{< highlight scss >}}
+```scss
 $font-family-sans-serif:
   // Safari for macOS and iOS (San Francisco)
   -apple-system,
@@ -45,11 +45,14 @@ $font-family-sans-serif:
   "Helvetica Neue", Arial,
   // Linux
   "Noto Sans",
+  "Liberation Sans",
   // Sans serif fallback
   sans-serif,
   // Emoji fonts
   "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji" !default;
-{{< /highlight >}}
+```
+
+Note that because the font stack includes emoji fonts, many common symbol/dingbat unicode characters will be rendered as multi-colored pictographs. Their appearance will vary, depending on the style used in the browser/platform's native emoji font, and they won't be affected by any CSS `color` styles.
 
 This `font-family` is applied to the `<body>` and automatically inherited globally throughout Bootstrap. To switch the global `font-family`, update `$font-family-base` and recompile Bootstrap.
 
@@ -370,6 +373,14 @@ These changes, and more, are demonstrated below.
 {{< partial "callout-warning-input-support.md" >}}
 {{< /callout >}}
 
+### Pointers on buttons
+
+Reboot includes an enhancement for `role="button"` to change the default cursor to `pointer`. Add this attribute to elements to help indicate elements are interactive. This role isn't necessary for `<button>` elements, which get their own `cursor` change.
+
+{{< example >}}
+<span role="button" tabindex="0">Non-button element button</span>
+{{< /example >}}
+
 ## Misc elements
 
 ### Address
@@ -397,8 +408,8 @@ The default `margin` on blockquotes is `1em 40px`, so we reset that to `0 0 1rem
 <div class="bd-example">
   <blockquote class="blockquote">
     <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer posuere erat a ante.</p>
-    <footer>Someone famous in <cite title="Source Title">Source Title</cite></footer>
   </blockquote>
+  <p>Someone famous in <cite title="Source Title">Source Title</cite></p>
 </div>
 
 ### Inline elements
@@ -429,9 +440,9 @@ The default `cursor` on summary is `text`, so we reset that to `pointer` to conv
 
 HTML5 adds [a new global attribute named `[hidden]`](https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/hidden), which is styled as `display: none` by default. Borrowing an idea from [PureCSS](https://purecss.io/), we improve upon this default by making `[hidden] { display: none !important; }` to help prevent its `display` from getting accidentally overridden.
 
-{{< highlight html >}}
+```html
 <input type="text" hidden>
-{{< /highlight >}}
+```
 
 {{< callout warning >}}
 ##### jQuery incompatibility

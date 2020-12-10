@@ -1,4 +1,11 @@
+.bd-sidebar {
+  @include media-breakpoint-down(md) {
+    margin: 0 -.75rem 1rem;
+  }
+}
+
 .bd-links {
+  overflow: auto;
   font-weight: 600;
 
   @include media-breakpoint-up(md) {
@@ -14,9 +21,18 @@
     overflow-y: auto;
   }
 
+  > ul {
+    @include media-breakpoint-down(md) {
+      padding: 1.5rem .75rem;
+      background-color: $gray-100;
+      border-bottom: 1px solid $gray-200;
+    }
+  }
+
   a {
     padding: .1875rem .5rem;
     margin-top: .125rem;
+    margin-left: 1.25rem;
     color: rgba($black, .65);
     text-decoration: if($link-decoration == none, null, none);
 
@@ -26,34 +42,41 @@
       text-decoration: if($link-hover-decoration == underline, none, null);
       background-color: rgba($bd-purple-bright, .1);
     }
+  }
 
-    // Indent if there's no submenu
-    &:only-child {
-      margin-left: 1.25rem;
+  .btn {
+    // Custom styles (as we don't have a completely neutral button style)
+    padding: .25rem .5rem;
+    font-weight: 600;
+    color: rgba($black, .65);
+    background-color: none;
+    border: 0;
+
+    &:hover,
+    &:focus {
+      color: rgba($black, .85);
+      background-color: rgba($bd-purple-bright, .1);
+    }
+
+    &:focus {
+      box-shadow: 0 0 0 1px rgba($bd-purple-bright, .7);
     }
 
     // Add chevron if there's a submenu
-    &:not(:only-child) {
-      &::before {
-        width: 1.25em;
-        line-height: 0; // Align in the middle
-        content: escape-svg($sidebar-collapse-icon);
-        @include transition(transform .35s ease);
-        transform-origin: .5em 50%;
-      }
-
-      &:not(.collapsed) {
-        color: rgba($black, .85);
-
-        &::before {
-          transform: rotate(90deg);
-        }
-      }
+    &::before {
+      width: 1.25em;
+      line-height: 0; // Align in the middle
+      content: escape-svg($sidebar-collapse-icon);
+      @include transition(transform .35s ease);
+      transform-origin: .5em 50%;
     }
 
-    // Adjust font size and font weights in submenu
-    + ul {
-      @include font-size(.875rem);
+    &[aria-expanded="true"] {
+      color: rgba($black, .85);
+
+      &::before {
+        transform: rotate(90deg);
+      }
     }
   }
 

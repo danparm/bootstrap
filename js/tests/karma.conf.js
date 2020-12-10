@@ -1,9 +1,11 @@
 /* eslint-env node */
+
 const path = require('path')
 const ip = require('ip')
 const { babel } = require('@rollup/plugin-babel')
 const istanbul = require('rollup-plugin-istanbul')
-const resolve = require('@rollup/plugin-node-resolve')
+const { nodeResolve } = require('@rollup/plugin-node-resolve')
+const replace = require('@rollup/plugin-replace')
 
 const {
   browsers,
@@ -32,11 +34,15 @@ const detectBrowsers = {
       return debug ? ['Chrome'] : ['ChromeHeadless']
     }
 
+    if (availableBrowser.includes('Chromium')) {
+      return debug ? ['Chromium'] : ['ChromiumHeadless']
+    }
+
     if (availableBrowser.includes('Firefox')) {
       return debug ? ['Firefox'] : ['FirefoxHeadless']
     }
 
-    throw new Error('Please install Firefox or Chrome')
+    throw new Error('Please install Chrome, Chromium or Firefox')
   }
 }
 
@@ -59,13 +65,19 @@ const conf = {
   },
   files: [
     'node_modules/hammer-simulator/index.js',
-    { pattern: 'js/tests/unit/**/!(jquery).spec.js', watched: !browserStack }
+    {
+      pattern: 'js/tests/unit/**/!(jquery).spec.js',
+      watched: !browserStack
+    }
   ],
   preprocessors: {
     'js/tests/unit/**/*.spec.js': ['rollup']
   },
   rollupPreprocessor: {
     plugins: [
+      replace({
+        'process.env.NODE_ENV': '"dev"'
+      }),
       istanbul({
         exclude: [
           'node_modules/**',
@@ -79,7 +91,7 @@ const conf = {
         // Inline the required helpers in each file
         babelHelpers: 'inline'
       }),
-      resolve()
+      nodeResolve()
     ],
     output: {
       format: 'iife',
@@ -113,7 +125,10 @@ if (browserStack) {
   conf.detectBrowsers = detectBrowsers
   conf.files = [
     'node_modules/jquery/dist/jquery.slim.min.js',
-    { pattern: 'js/tests/unit/jquery.spec.js', watched: false }
+    {
+      pattern: 'js/tests/unit/jquery.spec.js',
+      watched: false
+    }
   ]
 } else {
   frameworks.push('detectBrowsers')
@@ -133,19 +148,9 @@ if (browserStack) {
       emitWarning: false,
       global: {
         statements: 90,
-        branches: 90,
+        branches: 89,
         functions: 90,
         lines: 90
-      },
-      each: {
-        overrides: {
-          'js/src/dom/polyfill.js': {
-            statements: 39,
-            lines: 37,
-            branches: 19,
-            functions: 50
-          }
-        }
       }
     }
   }

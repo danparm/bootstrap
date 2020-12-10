@@ -54,6 +54,10 @@ In need of a button, but not the hefty background colors they bring? Replace the
 {{< /buttons.inline >}}
 {{< /example >}}
 
+{{< callout info >}}
+Some of the button styles use a relatively light foreground color, and should only be used on a dark background in order to have sufficient contrast.
+{{< /callout >}}
+
 ## Sizes
 
 Fancy larger or smaller buttons? Add `.btn-lg` or `.btn-sm` for additional sizes.
@@ -68,22 +72,6 @@ Fancy larger or smaller buttons? Add `.btn-lg` or `.btn-sm` for additional sizes
 <button type="button" class="btn btn-secondary btn-sm">Small button</button>
 {{< /example >}}
 
-Create block level buttons—those that span the full width of a parent—by adding `.btn-block`.
-
-{{< example >}}
-<button type="button" class="btn btn-primary btn-lg btn-block">Block level button</button>
-<button type="button" class="btn btn-secondary btn-lg btn-block">Block level button</button>
-{{< /example >}}
-
-## Active state
-
-Buttons will appear pressed (with a darker background, darker border, and inset shadow) when active. **There's no need to add a class to `<button>`s as they use a pseudo-class**. However, you can still force the same active appearance with `.active` (and include the <code>aria-pressed="true"</code> attribute) should you need to replicate the state programmatically.
-
-{{< example >}}
-<a href="#" class="btn btn-primary btn-lg active" role="button" aria-pressed="true">Primary link</a>
-<a href="#" class="btn btn-secondary btn-lg active" role="button" aria-pressed="true">Link</a>
-{{< /example >}}
-
 ## Disabled state
 
 Make buttons look inactive by adding the `disabled` boolean attribute to any `<button>` element. Disabled buttons have `pointer-events: none` applied to, preventing hover and active states from triggering.
@@ -96,7 +84,7 @@ Make buttons look inactive by adding the `disabled` boolean attribute to any `<b
 Disabled buttons using the `<a>` element behave a bit different:
 
 - `<a>`s don't support the `disabled` attribute, so you must add the `.disabled` class to make it visually appear disabled.
-- Some future-friendly styles are included to disable all `pointer-events` on anchor buttons. In browsers which support that property, you won't see the disabled cursor at all.
+- Some future-friendly styles are included to disable all `pointer-events` on anchor buttons.
 - Disabled buttons should include the `aria-disabled="true"` attribute to indicate the state of the element to assistive technologies.
 
 {{< example >}}
@@ -107,61 +95,79 @@ Disabled buttons using the `<a>` element behave a bit different:
 {{< callout warning >}}
 ##### Link functionality caveat
 
-The `.disabled` class uses `pointer-events: none` to try to disable the link functionality of `<a>`s, but that CSS property is not yet standardized. In addition, even in browsers that do support `pointer-events: none`, keyboard navigation remains unaffected, meaning that sighted keyboard users and users of assistive technologies will still be able to activate these links. So to be safe, add a `tabindex="-1"` attribute on these links (to prevent them from receiving keyboard focus) and use custom JavaScript to disable their functionality.
+The `.disabled` class uses `pointer-events: none` to try to disable the link functionality of `<a>`s, but that CSS property is not yet standardized. In addition, even in browsers that do support `pointer-events: none`, keyboard navigation remains unaffected, meaning that sighted keyboard users and users of assistive technologies will still be able to activate these links. So to be safe, in addition to `aria-disabled="true"`, also include a `tabindex="-1"` attribute on these links to prevent them from receiving keyboard focus, and use custom JavaScript to disable their functionality altogether.
 {{< /callout >}}
+
+## Block buttons
+
+Create responsive stacks of full-width, "block buttons" like those in Bootstrap 4 with a mix of our display and gap utilities. By using utilities instead of button specific classes, we have much greater control over spacing, alignment, and responsive behaviors.
+
+{{< example >}}
+<div class="d-grid gap-2">
+  <button class="btn btn-primary" type="button">Button</button>
+  <button class="btn btn-primary" type="button">Button</button>
+</div>
+{{< /example >}}
+
+Here we create a responsive variation, starting with vertically stacked buttons until the `md` breakpoint, where `.d-md-block` replaces the `.d-grid` class, thus nullifying the `gap-2` utility. Resize your browser to see them change.
+
+{{< example >}}
+<div class="d-grid gap-2 d-md-block">
+  <button class="btn btn-primary" type="button">Button</button>
+  <button class="btn btn-primary" type="button">Button</button>
+</div>
+{{< /example >}}
+
+You can adjust the width of your block buttons with grid column width classes. For example, for a half-width "block button", use `.col-6`. Center it horizontally with `.mx-auto`, too.
+
+{{< example >}}
+<div class="d-grid gap-2 col-6 mx-auto">
+  <button class="btn btn-primary" type="button">Button</button>
+  <button class="btn btn-primary" type="button">Button</button>
+</div>
+{{< /example >}}
+
+Additional utilities can be used to adjust the alignment of buttons when horizontal. Here we've taken our previous responsive example and added some flex utilities and a margin utility on the button to right align the buttons when they're no longer stacked.
+
+{{< example >}}
+<div class="d-grid gap-2 d-md-flex justify-content-md-end">
+  <button class="btn btn-primary me-md-2" type="button">Button</button>
+  <button class="btn btn-primary" type="button">Button</button>
+</div>
+{{< /example >}}
 
 ## Button plugin
 
-Do more with buttons. Control button states or create groups of buttons for more components like toolbars.
+The button plugin allows you to create simple on/off toggle buttons.
+
+{{< callout info >}}
+Visually, these toggle buttons are identical to the [checkbox toggle buttons]({{< docsref "/forms/checks-radios#checkbox-toggle-buttons" >}}). However, they are conveyed differently by assistive technologies: the checkbox toggles will be announced by screen readers as "checked"/"not checked" (since, despite their appearance, they are fundamentally still checkboxes), whereas these toggle buttons will be announced as "button"/"button pressed". The choice between these two approaches will depend on the type of toggle you are creating, and whether or not the toggle will make sense to users when announced as a checkbox or as an actual button.
+{{< /callout >}}
 
 ### Toggle states
 
-Add `data-toggle="button"` to toggle a button's `active` state. If you're pre-toggling a button, you must manually add the `.active` class **and** `aria-pressed="true"` to the `<button>`.
+Add `data-bs-toggle="button"` to toggle a button's `active` state. If you're pre-toggling a button, you must manually add the `.active` class **and** `aria-pressed="true"` to ensure that it is conveyed appropriately to assistive technologies.
 
 {{< example >}}
-<button type="button" class="btn btn-primary" data-toggle="button" aria-pressed="false" autocomplete="off">
-  Single toggle
-</button>
-{{< /example >}}
-
-### Checkbox and radio buttons
-
-Bootstrap's `.button` styles can be applied to other elements, such as `<label>`s, to provide checkbox or radio style button toggling. Add `data-toggle="buttons"` to a `.btn-group` containing those modified buttons to enable their toggling behavior via JavaScript and add `.btn-group-toggle` to style the `<input>`s within your buttons. **Note that you can create single input-powered buttons or groups of them.**
-
-The checked state for these buttons is **only updated via `click` event** on the button. If you use another method to update the input—e.g., with `<input type="reset">` or by manually applying the input's `checked` property—you'll need to toggle `.active` on the `<label>` manually.
-
-Note that pre-checked buttons require you to manually add the `.active` class to the input's `<label>`.
-
-{{< example >}}
-<div class="btn-group-toggle" data-toggle="buttons">
-  <label class="btn btn-secondary active">
-    <input type="checkbox" checked autocomplete="off"> Checked
-  </label>
-</div>
+<button type="button" class="btn btn-primary" data-bs-toggle="button" autocomplete="off">Toggle button</button>
+<button type="button" class="btn btn-primary active" data-bs-toggle="button" autocomplete="off" aria-pressed="true">Active toggle button</button>
+<button type="button" class="btn btn-primary" disabled data-bs-toggle="button" autocomplete="off">Disabled toggle button</button>
 {{< /example >}}
 
 {{< example >}}
-<div class="btn-group btn-group-toggle" data-toggle="buttons">
-  <label class="btn btn-secondary active">
-    <input type="radio" name="options" id="option1" autocomplete="off" checked> Active
-  </label>
-  <label class="btn btn-secondary">
-    <input type="radio" name="options" id="option2" autocomplete="off"> Radio
-  </label>
-  <label class="btn btn-secondary">
-    <input type="radio" name="options" id="option3" autocomplete="off"> Radio
-  </label>
-</div>
+<a href="#" class="btn btn-primary" role="button" data-bs-toggle="button">Toggle link</a>
+<a href="#" class="btn btn-primary active" role="button" data-bs-toggle="button" aria-pressed="true">Active toggle link</a>
+<a href="#" class="btn btn-primary disabled" tabindex="-1" aria-disabled="true" role="button" data-bs-toggle="button">Disabled toggle link</a>
 {{< /example >}}
 
 ### Methods
 
 You can create a button instance with the button constructor, for example:
 
-{{< highlight js >}}
+```js
 var button = document.getElementById('myButton')
 var bsButton = new bootstrap.Button(button)
-{{< /highlight >}}
+```
 
 <table class="table">
   <thead>
@@ -184,7 +190,7 @@ var bsButton = new bootstrap.Button(button)
         <code>dispose</code>
       </td>
       <td>
-        Destroys an element's button.
+        Destroys an element's button. (Removes stored data on the DOM element)
       </td>
     </tr>
   </tbody>
@@ -192,10 +198,10 @@ var bsButton = new bootstrap.Button(button)
 
 For example, to toggle all buttons
 
-{{< highlight js >}}
+```js
 var buttons = document.querySelectorAll('.btn')
 buttons.forEach(function (button) {
   var button = new bootstrap.Button(button)
   button.toggle()
 })
-{{< /highlight >}}
+```

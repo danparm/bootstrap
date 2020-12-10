@@ -1,7 +1,7 @@
 /**
  * --------------------------------------------------------------------------
- * Bootstrap (v5.0.0-alpha1): util/index.js
- * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
+ * Bootstrap (v5.0.0-beta1): util/index.js
+ * Licensed under MIT (https://github.com/twbs/bootstrap/blob/main/LICENSE)
  * --------------------------------------------------------------------------
  */
 
@@ -33,7 +33,7 @@ const getUID = prefix => {
 }
 
 const getSelector = element => {
-  let selector = element.getAttribute('data-target')
+  let selector = element.getAttribute('data-bs-target')
 
   if (!selector || selector === '#') {
     const hrefAttr = element.getAttribute('href')
@@ -66,13 +66,10 @@ const getTransitionDurationFromElement = element => {
   }
 
   // Get transition-duration of the element
-  let {
-    transitionDuration,
-    transitionDelay
-  } = window.getComputedStyle(element)
+  let { transitionDuration, transitionDelay } = window.getComputedStyle(element)
 
-  const floatTransitionDuration = parseFloat(transitionDuration)
-  const floatTransitionDelay = parseFloat(transitionDelay)
+  const floatTransitionDuration = Number.parseFloat(transitionDuration)
+  const floatTransitionDelay = Number.parseFloat(transitionDelay)
 
   // Return 0 if element or transition duration is not found
   if (!floatTransitionDuration && !floatTransitionDelay) {
@@ -83,7 +80,7 @@ const getTransitionDurationFromElement = element => {
   transitionDuration = transitionDuration.split(',')[0]
   transitionDelay = transitionDelay.split(',')[0]
 
-  return (parseFloat(transitionDuration) + parseFloat(transitionDelay)) * MILLISECONDS_MULTIPLIER
+  return (Number.parseFloat(transitionDuration) + Number.parseFloat(transitionDelay)) * MILLISECONDS_MULTIPLIER
 }
 
 const triggerTransitionEnd = element => {
@@ -96,6 +93,7 @@ const emulateTransitionEnd = (element, duration) => {
   let called = false
   const durationPadding = 5
   const emulatedDuration = duration + durationPadding
+
   function listener() {
     called = true
     element.removeEventListener(TRANSITION_END, listener)
@@ -110,21 +108,20 @@ const emulateTransitionEnd = (element, duration) => {
 }
 
 const typeCheckConfig = (componentName, config, configTypes) => {
-  Object.keys(configTypes)
-    .forEach(property => {
-      const expectedTypes = configTypes[property]
-      const value = config[property]
-      const valueType = value && isElement(value) ?
-        'element' :
-        toType(value)
+  Object.keys(configTypes).forEach(property => {
+    const expectedTypes = configTypes[property]
+    const value = config[property]
+    const valueType = value && isElement(value) ?
+      'element' :
+      toType(value)
 
-      if (!new RegExp(expectedTypes).test(valueType)) {
-        throw new Error(
-          `${componentName.toUpperCase()}: ` +
-          `Option "${property}" provided type "${valueType}" ` +
-          `but expected type "${expectedTypes}".`)
-      }
-    })
+    if (!new RegExp(expectedTypes).test(valueType)) {
+      throw new Error(
+        `${componentName.toUpperCase()}: ` +
+        `Option "${property}" provided type "${valueType}" ` +
+        `but expected type "${expectedTypes}".`)
+    }
+  })
 }
 
 const isVisible = element => {
@@ -174,16 +171,40 @@ const reflow = element => element.offsetHeight
 const getjQuery = () => {
   const { jQuery } = window
 
-  if (jQuery && !document.body.hasAttribute('data-no-jquery')) {
+  if (jQuery && !document.body.hasAttribute('data-bs-no-jquery')) {
     return jQuery
   }
 
   return null
 }
 
+const onDOMContentLoaded = callback => {
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', callback)
+  } else {
+    callback()
+  }
+}
+
+const isRTL = document.documentElement.dir === 'rtl'
+
+const defineJQueryPlugin = (name, plugin) => {
+  onDOMContentLoaded(() => {
+    const $ = getjQuery()
+    /* istanbul ignore if */
+    if ($) {
+      const JQUERY_NO_CONFLICT = $.fn[name]
+      $.fn[name] = plugin.jQueryInterface
+      $.fn[name].Constructor = plugin
+      $.fn[name].noConflict = () => {
+        $.fn[name] = JQUERY_NO_CONFLICT
+        return plugin.jQueryInterface
+      }
+    }
+  })
+}
+
 export {
-  getjQuery,
-  TRANSITION_END,
   getUID,
   getSelectorFromElement,
   getElementFromSelector,
@@ -195,5 +216,9 @@ export {
   isVisible,
   findShadowRoot,
   noop,
-  reflow
+  reflow,
+  getjQuery,
+  onDOMContentLoaded,
+  isRTL,
+  defineJQueryPlugin
 }
